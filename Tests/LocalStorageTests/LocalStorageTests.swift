@@ -11,6 +11,30 @@ final class LocalStorageTests: XCTestCase {
         case testString
         case testBool
         case testRemove
+        case testUser
+    }
+    
+    struct TestUser: Codable, Equatable, Storeable {
+        let firstName: String
+        let lastName: String
+        
+        var storeData: Data? {
+            let encoder = JSONEncoder()
+            let encoded = try? encoder.encode(self)
+            return encoded
+        }
+        
+        init(firstName: String, lastName: String) {
+            self.firstName = firstName
+            self.lastName = lastName
+        }
+        
+        init?(storeData: Data?) {
+            guard let storeData = storeData else { return nil }
+            let decoder = JSONDecoder()
+            guard let decoded = try? decoder.decode(TestUser.self, from: storeData) else { return nil }
+            self = decoded
+        }
     }
 
     func testInt() throws {
@@ -55,5 +79,17 @@ final class LocalStorageTests: XCTestCase {
         storage.remove(key: LocalStorageKeys.testRemove)
         let nilValue: String? = storage.getValue(forKey: LocalStorageKeys.testRemove)
         XCTAssertNil(nilValue)
+    }
+    
+    func testCustomObject() throws {
+        let testUser: TestUser = TestUser(firstName: "Name", lastName: "LastName")
+        storage.setValueStoreable(testUser, forKey: LocalStorageKeys.testUser)
+        
+        let storedUser: TestUser? = storage.getValueStoreable(forKey: LocalStorageKeys.testUser)
+        XCTAssertEqual(testUser, storedUser)
+       
+        storage.remove(key: LocalStorageKeys.testUser)
+        let nilUser: TestUser? = storage.getValueStoreable(forKey: LocalStorageKeys.testUser)
+        XCTAssertNil(nilUser)
     }
 }

@@ -20,7 +20,7 @@ public struct LocalStorage {
         self.userDefaults.set(value, forKey: key.rawValue)
     }
     
-    func setValueStoreable<T>(_ value: T?, forKey key: LocalStorageKeysProtocol) where T: Storeable {
+    public func setValueStoreable<T>(_ value: T?, forKey key: LocalStorageKeysProtocol) where T: Storeable {
         self.userDefaults.set(value?.storeData, forKey: key.rawValue)
     }
     
@@ -29,13 +29,13 @@ public struct LocalStorage {
         return self.userDefaults.object(forKey: key.rawValue) as? T
     }
     
-    func getValueStoreable<T>(forKey key: LocalStorageKeysProtocol) -> T? where T: Storeable {
+    public func getValueStoreable<T>(forKey key: LocalStorageKeysProtocol) -> T? where T: Storeable {
         let data: Data? = self.userDefaults.data(forKey: key.rawValue)
         return T(storeData: data)
     }
     
     // Remove
-    func remove(key: LocalStorageKeysProtocol) {
+    public func remove(key: LocalStorageKeysProtocol) {
         self.userDefaults.set(nil, forKey: key.rawValue)
     }
 }
